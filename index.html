@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- TAGI DLA DISCORDA (OPEN GRAPH) -->
+    <title>INTERACTIVERS - HOME</title>
+    <meta property="og:title" content="INTERACTIVERS">
+    <meta property="og:description" content="Twoja interaktywna baza wideo - Wybierz swoją kategorię.">
+    <meta property="og:url" content="https://wrdamian.github.io">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#00f3ff"> <!-- Neonowy błękit paska na Discordzie -->
+    <!-- Jeśli masz obrazek logo, wklej link do niego poniżej -->
+    <!-- <meta property="og:image" content="LINK_DO_OBRAZKA.jpg"> -->
+
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        :root { --neon-blue: #00f3ff; --bg: #050505; }
+        body { background: var(--bg); color: white; font-family: 'Orbitron', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        .header-container { width: 100%; text-align: center; padding: 40px 0; }
+        h1 { 
+            font-size: clamp(1.5rem, 8vw, 3.5rem); 
+            margin: 0; text-transform: uppercase; 
+            color: #fff; text-shadow: 0 0 10px var(--neon-blue), 0 0 25px var(--neon-blue); 
+            letter-spacing: 4px; line-height: 1.2;
+        }
+
+        nav { display: flex; flex-direction: column; gap: 15px; width: 90%; max-width: 400px; margin-top: 30px; }
+        .cat-link {
+            text-decoration: none; text-align: center; padding: 20px;
+            border: 2px solid var(--neon-blue); color: var(--neon-blue);
+            font-weight: bold; transition: 0.3s; text-transform: uppercase;
+            box-shadow: 0 0 10px var(--neon-blue); border-radius: 8px;
+            background: rgba(0, 243, 255, 0.05);
+        }
+        .cat-link:hover {
+            background: var(--neon-blue); color: #000;
+            box-shadow: 0 0 30px var(--neon-blue), 0 0 50px var(--neon-blue);
+            transform: scale(1.03);
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <h1>INTERACTIVERS</h1>
+    </div>
+    <nav>
+        <a href="ezo.html" class="cat-link">EZO</a>
+        <a href="horror.html" class="cat-link">HORROR</a>
+        <a href="relax.html" class="cat-link">RELAX</a>
+        <a href="humor.html" class="cat-link">HUMOR</a>
+        <a href="drama.html" class="cat-link">DRAMA</a>
+        <a href="wokal.html" class="cat-link">WOKAL</a>
+    </nav>
+</body>
+</html>
