@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neonowy Kalkulator 300+</title>
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-red: #ff003c;
+            --bg-color: #050505;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--neon-blue);
+            animation: pulse 1.5s infinite alternate;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.7; text-shadow: 0 0 5px var(--neon-blue); }
+            to { opacity: 1; text-shadow: 0 0 20px var(--neon-blue); }
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--neon-blue);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px var(--neon-blue);
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: transparent;
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-shadow: 0 0 5px var(--neon-blue);
+            box-shadow: 0 0 5px var(--neon-blue);
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+        button:hover { background: var(--neon-blue); color: black; }
+
+        .total-card {
+            border: 2px solid var(--neon-blue);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 0 15px var(--neon-blue);
+            background: rgba(0, 242, 255, 0.05);
+        }
+
+        #totalKcal { font-size: 1.8rem; display: block; text-shadow: 0 0 10px var(--neon-blue); }
+
+        #mealList {
+            border: 1px solid var(--neon-blue);
+            padding: 8px;
+            border-radius: 5px;
+            height: 150px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 5px var(--neon-blue);
+            font-size: 0.8rem;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+            padding-bottom: 4px;
+        }
+
+        .delete-btn {
+            border: 1px solid var(--neon-red) !important;
+            color: var(--neon-red) !important;
+            padding: 2px 8px !important;
+            font-size: 0.7rem;
+            text-shadow: 0 0 3px var(--neon-red) !important;
+            box-shadow: 0 0 3px var(--neon-red) !important;
+            margin-left: 10px;
+            text-transform: none;
+        }
+
+        .delete-btn:hover { background: var(--neon-red) !important; color: white !important; }
+
+        .btn-reset { border-radius: 50%; width: 45px; height: 45px; margin-bottom: 10px; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+
+    <h1>Kalkulator 300+ Produktów</h1>
+    
+    <button class="btn-reset" onclick="resetMeal()">O</button>
+
+    <div class="container">
+        <!-- Produkty -->
+        <input list="products" id="prodName" placeholder="Zacznij pisać nazwę..." oninput="autoFillKcal(this.value)">
+        <datalist id="products"></datalist>
+
+        <div style="display: flex; gap: 8px;">
+            <input type="number" id="prodKcal" placeholder="kcal/100g">
+            <input list="weightOptions" type="number" id="prodWeight" placeholder="Waga (g)">
+            <datalist id="weightOptions"></datalist>
+        </div>
+        
+        <button onclick="addIngredient()">DODAJ DO POSIŁKU</button>
+
+        <div class="total-card">
+            SUMA POSIŁKU:
+            <span id="totalKcal">0 kcal</span>
+        </div>
+
+        <div id="mealList"></div>
+    </div>
+
+    <script>
+        const db = {
+            "Mąka pszenna typ 450": 348, "Mąka pszenna typ 500": 351, "Mąka pszenna typ 2000": 323, "Mąka żytnia": 337, "Mąka migdałowa": 579, "Mąka ryżowa": 366, "Mąka kokosowa": 443, "Mąka kukurydziana": 361, "Mąka owsiana": 404, "Mąka jaglana": 378, "Mąka gryczana": 335, "Mąka z ciecierzycy": 387, "Skrobia ziemniaczana": 348,
+            "Pierś z kurczaka (surowa)": 106, "Pierś z indyka": 104, "Udo z kurczaka": 158, "Skrzydełka z kurczaka": 186, "Mięso mielone wołowe": 250, "Mięso mielone wieprzowe": 263, "Schab wieprzowy": 174, "Karkówka": 230, "Boczek surowy": 510, "Polędwica wołowa": 136, "Gulasz wołowy": 120, "Wątróbka drobiowa": 136, "Kaczka (pierś)": 140, "Gęś": 370,
+            "Łosoś świeży": 208, "Dorsz świeży": 82, "Tuńczyk w wodzie": 116, "Makrela świeża": 205, "Pstrąg": 148, "Morszczuk": 89, "Krewetki": 99, "Śledź w oleju": 301,
+            "Fasolka szparagowa zielona": 31, "Fasolka szparagowa żółta": 31, "Ziemniaki gotowane": 77, "Bataty": 86, "Brokuły": 34, "Kalafior": 25, "Marchew": 41, "Ogórek": 15, "Pomidor": 18, "Cukinia": 17, "Cebula": 40, "Czosnek": 149, "Szpinak": 23, "Papryka czerwona": 31, "Buraki": 43, "Dynia": 26,
+            "Jabłko": 52, "Banan": 89, "Gruszka": 57, "Pomaranńcza": 47, "Kiwi": 61, "Truskawki": 32, "Awokado": 160, "Mango": 60, "Arbuz": 30, "Maliny": 52, "Borówki": 57,
+            "Mleko 2%": 50, "Mleko 3.2%": 61, "Jogurt naturalny": 60, "Twaróg chudy": 98, "Twaróg półtłusty": 133, "Serek wiejski": 97, "Ser żółty Gouda": 356, "Mozzarella": 280, "Masło": 717, "Jajko (całe)": 155,
+            "Ryż biały": 365, "Ryż brązowy": 350, "Kasza gryczana": 343, "Kasza jaglana": 350, "Płatki owsiane": 379, "Soczewica": 350, "Ciecierzyca": 360,
+            "Oliwa z oliwek": 884, "Olej rzepakowy": 884, "Tofu": 76, "Pizza Pepperoni": 300, "Kebab w cieście": 220, "Frytki": 312, "Chipsy": 536, "Pączek": 450, "Czekolada mleczna": 535, "Coca-Cola": 42, "Miód": 304, "Masło orzechowe": 588
+        };
+
+        const datalist = document.getElementById('products');
+        Object.keys(db).sort().forEach(item => {
+            let option = document.createElement('option');
+            option.value = item;
+            datalist.appendChild(option);
+        });
+
+        const weightList = document.getElementById('weightOptions');
+        for (let i = 1; i <= 1000; i++) {
+            let option = document.createElement('option');
+            option.value = i;
+            weightList.appendChild(option);
+        }
+
+        // Automatyczne wypełnianie kcal i FOCUS na wagę
+        function autoFillKcal(val) {
+            if (db[val]) {
+                document.getElementById('prodKcal').value = db[val];
+                document.getElementById('prodWeight').focus();
+            }
+        }
+
+        let totalCalories = 0;
+
+        function addIngredient() {
+            const nameInput = document.getElementById('prodName');
+            const kcalInput = document.getElementById('prodKcal');
+            const weightInput = document.getElementById('prodWeight');
+
+            const name = nameInput.value || "Produkt";
+            const kcalPer100 = parseFloat(kcalInput.value);
+            const weight = parseFloat(weightInput.value);
+
+            if (!isNaN(kcalPer100) && !isNaN(weight)) {
+                const kcalValue = Math.round((kcalPer100 / 100) * weight);
+                totalCalories += kcalValue;
+
+                const list = document.getElementById('mealList');
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'list-item';
+                
+                const itemId = Date.now();
+                itemDiv.setAttribute('data-id', itemId);
+
+                itemDiv.innerHTML = `
+                    <div style="flex-grow: 1;">
+                        <span>${name} (${weight}g)</span>
+                        <span style="color: var(--neon-blue); margin-left: 5px;">${kcalValue} kcal</span>
+                    </div>
+                    <button class="delete-btn" onclick="removeItem(${itemId}, ${kcalValue})">X</button>
+                `;
+                
+                list.prepend(itemDiv);
+                updateTotalDisplay();
+
+                // Czyścimy i wracamy kursorem do nazwy produktu
+                nameInput.value = '';
+                kcalInput.value = '';
+                weightInput.value = '';
+                nameInput.focus();
+            }
+        }
+
+        function removeItem(id, kcalToRemove) {
+            const item = document.querySelector(`[data-id="${id}"]`);
+            if (item) {
+                totalCalories -= kcalToRemove;
+                item.remove();
+                updateTotalDisplay();
+            }
+        }
+
+        function updateTotalDisplay() {
+            if (totalCalories < 0) totalCalories = 0;
+            document.getElementById('totalKcal').innerText = totalCalories + " kcal";
+        }
+
+        function resetMeal() {
+            if (confirm("Czy na pewno chcesz wyczyścić cały posiłek?")) {
+                totalCalories = 0;
+                updateTotalDisplay();
+                document.getElementById('mealList').innerHTML = "";
+                document.getElementById('prodName').focus();
+            }
+        }
+    </script>
+</body>
+</html>
